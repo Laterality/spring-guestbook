@@ -37,7 +37,7 @@ subprojects {
   apply(plugin = "io.spring.dependency-management")
   apply(plugin = "org.springframework.boot")
 
-  java.sourceCompatibility = JavaVersion.VERSION_1_8
+  java.sourceCompatibility = JavaVersion.VERSION_11
 
   allOpen {
     annotation("javax.persistence.Entity")
@@ -77,7 +77,8 @@ subprojects {
   tasks.withType<KotlinCompile> {
     kotlinOptions {
       freeCompilerArgs = listOf("-Xjsr305=strict")
-      jvmTarget = "1.8"
+//      jvmTarget = "1.8"
+      jvmTarget = "11"
     }
   }
 }
