@@ -54,4 +54,18 @@ internal class GuestbookHandlerTest {
       .jsonPath("$.content").isEqualTo(contents)
       .jsonPath("$.id").isNumber
   }
+
+  @Test
+  internal fun `게시된 전체 방명록을 조회할 수 있다`() {
+    val contents = "Hello, Spring!"
+
+    publishGuestbookPost(contents) { publishResponse ->
+      client.get()
+        .uri(GuestbookHandler.BASE_PATH)
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("$.posts").isArray
+    }
+  }
 }
