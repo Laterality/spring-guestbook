@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  val kotlinVersion = "1.3.70"
+  val kotlinVersion = "1.3.72"
 
+  id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
+  id("org.jlleitschuh.gradle.ktlint-idea") version "9.3.0"
   id("org.springframework.boot") version "2.3.3.RELEASE"
   id("io.spring.dependency-management") version "1.0.10.RELEASE"
   kotlin("jvm") version kotlinVersion
@@ -12,7 +14,22 @@ plugins {
   kotlin("plugin.spring") version kotlinVersion
 }
 
+ktlint {
+  debug.set(true)
+  verbose.set(true)
+  outputToConsole.set(true)
+  outputColorName.set("RED")
+  ignoreFailures.set(false)
+  additionalEditorconfigFile.set(file(".editorconfig"))
+
+  filter {
+//    exclude("**/SecurityConfig.kt")
+  }
+}
+
 allprojects {
+  apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
+
   repositories {
     mavenCentral()
     maven { url = uri("https://plugins.gradle.org/m2/") }
@@ -53,6 +70,7 @@ subprojects {
   dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -68,6 +86,10 @@ subprojects {
       exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("io.mockk:mockk:1.10.0")
+    testImplementation("io.kotest:kotest-runner-junit5:4.2.5") // for kotest framework
+    testImplementation("io.kotest:kotest-assertions-core:4.2.5") // for kotest core jvm assertions
+    testImplementation("io.kotest:kotest-property:4.2.5") // for kotest property test
   }
 
   tasks.withType<Test> {

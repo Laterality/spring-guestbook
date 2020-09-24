@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class GuestbookReactiveApplication
 
 fun main(args: Array<String>) {
-	runApplication<GuestbookReactiveApplication>(*args)
+  runApplication<GuestbookReactiveApplication>(*args)
 }

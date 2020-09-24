@@ -1,0 +1,55 @@
+package kr.latera.guestbookreactive.handler
+
+import kr.latera.guestbookreactive.domain.GuestbookPost
+import kr.latera.guestbookreactive.domain.GuestbookPostRepository
+import kr.latera.guestbookreactive.handler.dto.GuestbookPostResponse
+import kr.latera.guestbookreactive.handler.dto.GuestbookPublishRequest
+import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Mono
+import java.net.URI
+
+@Component
+class GuestbookHandler(
+  private val repository: GuestbookPostRepository
+) {
+  fun publishGuestbookPost(request: ServerRequest): Mono<ServerResponse> =
+    request.bodyToMono(GuestbookPublishRequest::class.java)
+      .flatMap {
+        repository.save(GuestbookPost(content = it.content))
+      }
+      .flatMap {
+        ServerResponse
+          .created(buildPostLocationUri(it))
+          .build()
+      }
+
+  private fun buildPostLocationUri(it: GuestbookPost): URI {
+    return UriComponentsBuilder.fromUriString(BASE_PATH)
+      .pathSegment(it.id.toString())
+      .build().toUri()
+  }
+
+  fun retrieveGuestbookPost(request: ServerRequest): Mono<ServerResponse> =
+    repository.findById(request.pathVariable(PATH_VARIABLE_KEY_POST_ID).toLong())
+      .flatMap {
+        ServerResponse.ok()
+          .body(
+            Mono.just(
+              GuestbookPostResponse(
+                it.id,
+                it.content
+              )
+            ),
+            GuestbookPostResponse::class.java
+          )
+      }
+
+  companion object {
+    const val BASE_PATH = "/api/v1/guestbook/posts"
+    const val PATH_VARIABLE_KEY_POST_ID = "postId"
+    const val BASE_PATH_APPEND_ID = "/{$PATH_VARIABLE_KEY_POST_ID}"
+  }
+}
