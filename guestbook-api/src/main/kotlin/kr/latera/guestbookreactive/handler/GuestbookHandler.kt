@@ -2,6 +2,7 @@ package kr.latera.guestbookreactive.handler
 
 import kr.latera.guestbookreactive.domain.GuestbookPost
 import kr.latera.guestbookreactive.domain.GuestbookPostRepository
+import kr.latera.guestbookreactive.handler.dto.GuestbookPostListResponse
 import kr.latera.guestbookreactive.handler.dto.GuestbookPostResponse
 import kr.latera.guestbookreactive.handler.dto.GuestbookPublishRequest
 import org.springframework.stereotype.Component
@@ -45,6 +46,20 @@ class GuestbookHandler(
             ),
             GuestbookPostResponse::class.java
           )
+      }
+
+  fun retrieveGuestbookPosts(request: ServerRequest): Mono<ServerResponse> =
+    repository.findAll()
+      .map {
+        GuestbookPostResponse(
+          it.id,
+          it.content
+        )
+      }
+      .collectList()
+      .flatMap {
+        ServerResponse.ok()
+          .body(Mono.just(GuestbookPostListResponse(it)), GuestbookPostListResponse::class.java)
       }
 
   companion object {

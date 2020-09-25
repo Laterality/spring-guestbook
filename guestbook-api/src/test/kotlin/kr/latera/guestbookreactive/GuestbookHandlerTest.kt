@@ -20,11 +20,11 @@ internal class GuestbookHandlerTest {
     val contents = "Hello, Reactor!"
 
     publishGuestbookPost(contents) { publishResponse ->
-      retrieveGuestbookPost(publishResponse, contents)
+      retrieveSingleGuestbookPost(publishResponse, contents)
     }
   }
 
-  private fun publishGuestbookPost(content: String, consumer: ((EntityExchangeResult<ByteArray>) -> Unit)?) {
+  private fun publishGuestbookPost(content: String, consumer: ((EntityExchangeResult<ByteArray>) -> Unit)? = null) {
     val jsonBody =
       """
       {
@@ -45,7 +45,7 @@ internal class GuestbookHandlerTest {
       }
   }
 
-  private fun retrieveGuestbookPost(publishResponse: EntityExchangeResult<ByteArray>, contents: String) {
+  private fun retrieveSingleGuestbookPost(publishResponse: EntityExchangeResult<ByteArray>, contents: String) {
     client.get()
       .uri(publishResponse.responseHeaders.location!!.toASCIIString())
       .exchange()
@@ -53,5 +53,17 @@ internal class GuestbookHandlerTest {
       .expectBody()
       .jsonPath("$.content").isEqualTo(contents)
       .jsonPath("$.id").isNumber
+  }
+
+  @Test
+  internal fun `전체 방명록 게시물을 조회한다`() {
+    publishGuestbookPost("Hello, Spring!")
+    client.get()
+      .uri(GuestbookHandler.BASE_PATH)
+      .exchange()
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("posts").isArray
+      .jsonPath("posts").isNotEmpty
   }
 }

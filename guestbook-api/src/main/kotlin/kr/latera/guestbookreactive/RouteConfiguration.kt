@@ -21,6 +21,7 @@ class RouteConfiguration {
       router {
         listOf(
           POST("/", guestbookHandler::publishGuestbookPost),
+          GET("/", guestbookHandler::retrieveGuestbookPosts),
           GET(GuestbookHandler.BASE_PATH_APPEND_ID, guestbookHandler::retrieveGuestbookPost)
         )
       }

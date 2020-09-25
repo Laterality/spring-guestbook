@@ -10,9 +10,12 @@ import javax.persistence.Id
  */
 @Entity
 class GuestbookPost(
+  id: Long? = null,
+  val content: String
+) {
   @Id
   @org.springframework.data.annotation.Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = 0,
-  val content: String
-)
+  var id: Long? = id
+  protected set
+}
