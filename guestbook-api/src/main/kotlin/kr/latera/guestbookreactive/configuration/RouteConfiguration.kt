@@ -1,4 +1,4 @@
-package kr.latera.guestbookreactive
+package kr.latera.guestbookreactive.configuration
 
 import kr.latera.guestbookreactive.handler.GuestbookHandler
 import org.springframework.context.annotation.Bean

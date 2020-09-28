@@ -1,4 +1,4 @@
-package kr.latera.guestbookreactive
+package kr.latera.guestbookreactive.configuration
 
 import io.r2dbc.spi.ConnectionFactory
 import org.springframework.context.annotation.Bean
