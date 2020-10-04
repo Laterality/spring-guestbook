@@ -17,5 +17,5 @@ class GuestbookPost(
   @org.springframework.data.annotation.Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   var id: Long? = id
-  protected set
+    protected set
 }
