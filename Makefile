@@ -2,4 +2,8 @@
 
 build-api:
 	./gradlew guestbook-api:build
-	docker build -t guestbook-api:latest guestbook-api
+	docker build -t laterality/guestbook-api:latest guestbook-api
+
+publish-api:
+	docker login
+	docker push laterality/guestbook-api:latest
