@@ -56,6 +56,25 @@ internal class GuestbookHandlerTest {
   }
 
   @Test
+  internal fun `빈 내용으로 게시를 요청하는 경우 400으로 응답한다`() {
+    val jsonBody =
+      """
+      {
+        "content": ""
+      }
+      """.trimIndent()
+
+    client.post()
+      .uri(GuestbookHandler.BASE_PATH)
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(Mono.just(jsonBody), String::class.java)
+      .exchange()
+      .expectStatus().isBadRequest
+      .expectBody()
+      .jsonPath("$.message").isNotEmpty
+  }
+
+  @Test
   internal fun `전체 방명록 게시물을 조회한다`() {
     publishGuestbookPost("Hello, Spring!")
     client.get()

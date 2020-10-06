@@ -6,4 +6,5 @@ bootJar.archiveFileName.set("app.jar")
 jar.enabled = true
 
 dependencies {
+  implementation("org.springframework.boot:spring-boot-starter-validation")
 }
