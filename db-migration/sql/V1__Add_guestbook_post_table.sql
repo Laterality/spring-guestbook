@@ -1,4 +1,4 @@
-CREATE TABLE GUESTBOOK_POST
+CREATE TABLE guestbook_post
 (
     id      bigint auto_increment not null,
     content varchar(255)          not null,
