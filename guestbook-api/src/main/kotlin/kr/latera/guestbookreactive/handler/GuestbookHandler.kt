@@ -1,10 +1,11 @@
 package kr.latera.guestbookreactive.handler
 
 import kr.latera.guestbookreactive.domain.GuestbookPost
-import kr.latera.guestbookreactive.domain.GuestbookPostRepository
+import kr.latera.guestbookreactive.domain.GuestbookService
 import kr.latera.guestbookreactive.handler.dto.GuestbookPostListResponse
 import kr.latera.guestbookreactive.handler.dto.GuestbookPostResponse
-import kr.latera.guestbookreactive.handler.dto.GuestbookPublishRequest
+import kr.latera.guestbookreactive.domain.dto.GuestbookPublishRequest
+import kr.latera.guestbookreactive.handler.dto.ErrorResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -14,17 +15,20 @@ import java.net.URI
 
 @Component
 class GuestbookHandler(
-  private val repository: GuestbookPostRepository
+  private val service: GuestbookService
 ) {
   fun publishGuestbookPost(request: ServerRequest): Mono<ServerResponse> =
     request.bodyToMono(GuestbookPublishRequest::class.java)
       .flatMap {
-        repository.save(GuestbookPost(content = it.content))
+        service.publish(it)
       }
       .flatMap {
         ServerResponse
           .created(buildPostLocationUri(it))
           .build()
+      }
+      .onErrorResume {
+        ServerResponse.badRequest().body(Mono.just(ErrorResponse(it.message!!)), ErrorResponse::class.java)
       }
 
   private fun buildPostLocationUri(it: GuestbookPost): URI {
@@ -34,7 +38,7 @@ class GuestbookHandler(
   }
 
   fun retrieveGuestbookPost(request: ServerRequest): Mono<ServerResponse> =
-    repository.findById(request.pathVariable(PATH_VARIABLE_KEY_POST_ID).toLong())
+    service.findPostById(request.pathVariable(PATH_VARIABLE_KEY_POST_ID).toLong())
       .flatMap {
         ServerResponse.ok()
           .body(
@@ -49,7 +53,7 @@ class GuestbookHandler(
       }
 
   fun retrieveGuestbookPosts(request: ServerRequest): Mono<ServerResponse> =
-    repository.findAll()
+    service.findAllPosts()
       .map {
         GuestbookPostResponse(
           it.id,
