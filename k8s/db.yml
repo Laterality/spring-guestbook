@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-db-deployment
+spec:
+  selector:
+    matchLabels:
+      name: guestbook-db
+  template:
+    metadata:
+      labels:
+        name: guestbook-db
+    spec:
+      containers:
+      - name: guestbook-db
+        image: mysql:8.0
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: root
+          - name: MYSQL_DATABASE
+            value: guestbook
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        volumeDevices:
+          - devicePath: /var/lib/mysql
+            name: data
+        ports:
+        - containerPort: 3306
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: guestbook-db-data-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook-db-service
+spec:
+  type: LoadBalancer
+  selector:
+    name: guestbook-db
+  ports:
+  - port: 3306
+    targetPort: 3306

@@ -6,5 +6,6 @@ bootJar.archiveFileName.set("app.jar")
 jar.enabled = true
 
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("dev.miku:r2dbc-mysql:0.8.2.RELEASE")
 }

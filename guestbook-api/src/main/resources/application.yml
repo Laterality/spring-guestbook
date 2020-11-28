@@ -1,5 +1,14 @@
 spring.r2dbc:
-  url: r2dbc:h2:mem://guestbook
+  url: r2dbc:mysql://localhost:3306/guestbook
   name: guestbook
-  username: sa
-  password: ""
+  username: root
+  password: root
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
