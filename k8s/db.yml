@@ -26,5 +26,25 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
+        volumeDevices:
+          - devicePath: /var/lib/mysql
+            name: data
         ports:
         - containerPort: 3306
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: guestbook-db-data-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook-db-service
+spec:
+  type: LoadBalancer
+  selector:
+    name: guestbook-db
+  ports:
+  - port: 3306
+    targetPort: 3306
